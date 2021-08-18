@@ -89,6 +89,12 @@ $.getJSON("data/FSSTL278.geojson", function(data) {
     L.geoJSON(data).bindPopup("2021-7-28: 會德豐以$41.85億元、得面積82,258呎政府地，每呎樓面地價約 " + "<b>$8,499</b>").addTo(kwutung_lands);
 });
 		
+$.getJSON("data/DD91Lot4076.geojson", function(data) {
+    // add GeoJSON layer to the map once the file is loaded
+    L.geoJSON(data).bindPopup("2021-6-30: 永泰地產以26.168億元，投得面積4.74萬方呎政府地，以最高可建樓面28.42萬方呎計，每方呎樓面地價約 " + "<b>$9,208</b>").addTo(kwutung_lands);
+});		
+		
+
 // Layer control
 var baseMaps = {
     "OSM 圖層": osm,
