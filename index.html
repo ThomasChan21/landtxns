@@ -48,7 +48,7 @@ var imagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/
 var url = "data/geodata.geojson"
 
 // Markers
-var kwutong_lands = L.layerGroup();
+var kwutung_lands = L.layerGroup();
 
 function formatNumber(num) {
 	return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
@@ -72,7 +72,7 @@ popup.addTo(map);
 
 $.getJSON(url, function(data) {
     // add GeoJSON layer to the map once the file is loaded
-    L.geoJSON(data).addTo(kwutong_lands);
+    L.geoJSON(data).addTo(kwutung_lands);
 });
 
 // Layer control
