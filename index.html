@@ -57,7 +57,7 @@ var popup = singleMarker.bindPopup('目標物業').openPopup();
 popup.addTo(map);
 		
 // load GeoJSON from a local folder
-const txnList = ["data/DD95Lot29etc.geojson", "data/FSSTL263.geojson", "data/FSSTL279.geojson"]
+const txnList = ["data/DD95Lot29etc.geojson", "data/FSSTL263.geojson", "data/FSSTL279.geojson"];
 
 for (i=0; i < txnList.length; i++) {
 	$.getJSON(txnList[i], function(data) {
