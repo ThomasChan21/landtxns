@@ -60,20 +60,31 @@ var popup = singleMarker.bindPopup('目標物業').openPopup();
 popup.addTo(map);
 		
 // load GeoJSON from a local folder
-const txnList = ["data/DD95Lot29etc.geojson", "data/FSSTL263.geojson", "data/FSSTL279.geojson"];
+// const txnList = ["data/DD95Lot29etc.geojson", "data/FSSTL263.geojson", "data/FSSTL279.geojson"];
 
-for (i=0; i < txnList.length; i++) {
-	$.getJSON(txnList[i], function(data) {
+// for (i=0; i < txnList.length; i++) {
+// 	$.getJSON(txnList[i], function(data) {
 		// add GeoJSON layer to the map once the file is loaded
-		L.geoJSON(data).addTo(kwutung_lands);
-	});
-};
+// 		L.geoJSON(data).addTo(kwutung_lands);
+// 	});
+// };
 
-//$.getJSON(url, function(data) {
+$.getJSON("data/DD95Lot29etc.geojson", function(data) {
     // add GeoJSON layer to the map once the file is loaded
-//    L.geoJSON(data).bindPopup("2021-8-17: 嘉里$4.278億購入面積18.13萬呎農地，每呎地價約 " + "<b>$2,360</b>").addTo(kwutung_lands);
-//});
+    L.geoJSON(data).bindPopup("2021-8-17: 嘉里$4.278億購入面積18.13萬呎農地，每呎地價約 " + "<b>$2,360</b>").addTo(kwutung_lands);
+});
 
+$.getJSON("data/FSSTL263.geojson", function(data) {
+    // add GeoJSON layer to the map once the file is loaded
+    L.geoJSON(data).bindPopup("2021-8-17: 嘉里$4.278億購入面積18.13萬呎農地，每呎地價約 " + "<b>$2,360</b>").addTo(kwutung_lands);
+});		
+
+$.getJSON("data/FSSTL279.geojson", function(data) {
+    // add GeoJSON layer to the map once the file is loaded
+    L.geoJSON(data).bindPopup("2021-8-17: 嘉里$4.278億購入面積18.13萬呎農地，每呎地價約 " + "<b>$2,360</b>").addTo(kwutung_lands);
+});
+		
+		
 // Layer control
 var baseMaps = {
     "OSM 圖層": osm,
