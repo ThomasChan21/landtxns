@@ -46,6 +46,9 @@ var imagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/
 // Map
 var map = L.map('map', {center: [22.50939, 114.10432], zoom: 14, layers: [osm,kwutung_lands]});
 
+// Markers
+var kwutung_lands = L.layerGroup();		
+
 // Target Property Icon (moveable)
 var myIcon = L.icon({
 	iconUrl: 'img/marker-icon-red.png',
