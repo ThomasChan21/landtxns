@@ -41,21 +41,21 @@
 	<script>
 
 // Tile layer
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'});
-// var imagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'});
+var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'});
+var imagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'});
 
 
 // load GeoJSON from a local folder
-// var url = "data/geodata.geojson"
+var url = "data/geodata.geojson"
 
 
-//function formatNumber(num) {
-//	return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-//}
+function formatNumber(num) {
+	return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+}
 
 
 // Map
-var map = L.map('map', {center: [22.50939, 114.10432], zoom: 11);
+var map = L.map('map', {center: [22.50939, 114.10432], zoom: 11, layers: [osm]});
 
 
 // Target Property Icon (moveable)
@@ -69,13 +69,20 @@ var popup = singleMarker.bindPopup('目標物業(可移動) ' + singleMarker.get
 popup.addTo(map);
 
 
-$.getJSON("data/geodata.geojson", function(data) {
+$.getJSON(url, function(data) {
     // add GeoJSON layer to the map once the file is loaded
     L.geoJSON(data).addTo(map);
 });
 
-
-
+// Layer control
+var baseMaps = {
+    "OSM 圖層": osm,
+    "Imagery 圖層": imagery
+};
+var overlayMaps = {
+    "First Marker": singleMarker
+};
+L.control.layers(baseMaps, overlayMaps, {position: "topleft", collapsed: true}).addTo(map);
 	</script>
 </body>
 </html>
