@@ -43,21 +43,8 @@
 var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'});
 var imagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'});
 
-
-// load GeoJSON from a local folder
-var url = "data/geodata.geojson"
-
-// Markers
-var kwutung_lands = L.layerGroup();
-
-function formatNumber(num) {
-	return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-}
-
-
 // Map
 var map = L.map('map', {center: [22.50939, 114.10432], zoom: 14, layers: [osm,kwutung_lands]});
-
 
 // Target Property Icon (moveable)
 var myIcon = L.icon({
@@ -68,12 +55,21 @@ var myIcon = L.icon({
 var singleMarker = L.marker([22.50939, 114.10432], { icon: myIcon, draggable: false }).addTo(map);
 var popup = singleMarker.bindPopup('目標物業').openPopup();
 popup.addTo(map);
+		
+// load GeoJSON from a local folder
+const txnList = ["data/DD95Lot29etc.geojson", "data/FSSTL263.geojson", "data/FSSTL279.geojson"]
 
+for (i=0; i < txnList.length; i++) {
+	$.getJSON(txnList[i], function(data) {
+		// add GeoJSON layer to the map once the file is loaded
+		L.geoJSON(data).addTo(kwutung_lands);
+	});
+}
 
-$.getJSON(url, function(data) {
+//$.getJSON(url, function(data) {
     // add GeoJSON layer to the map once the file is loaded
-    L.geoJSON(data).bindPopup("2021-8-17: 嘉里$4.278億購入面積18.13萬呎農地，每呎地價約 " + "<b>$2,360</b>").addTo(kwutung_lands);
-});
+//    L.geoJSON(data).bindPopup("2021-8-17: 嘉里$4.278億購入面積18.13萬呎農地，每呎地價約 " + "<b>$2,360</b>").addTo(kwutung_lands);
+//});
 
 // Layer control
 var baseMaps = {
