@@ -65,14 +65,14 @@ var myIcon = L.icon({
 	iconSize: [25, 40],
 });
 
-var singleMarker = L.marker([22.50939, 114.10432], { icon: myIcon, draggable: true }).addTo(map);
-var popup = singleMarker.bindPopup('目標物業(可移動) ' + singleMarker.getLatLng()).openPopup();
+var singleMarker = L.marker([22.50939, 114.10432], { icon: myIcon, draggable: false }).addTo(map);
+var popup = singleMarker.bindPopup('目標物業').openPopup();
 popup.addTo(map);
 
 
 $.getJSON(url, function(data) {
     // add GeoJSON layer to the map once the file is loaded
-    L.geoJSON(data).addTo(kwutung_lands);
+    L.geoJSON(data).bindPopup("嘉里$4.278億購入面積18.13萬呎農地，每呎地價約$2,360").addTo(kwutung_lands);
 });
 
 // Layer control
