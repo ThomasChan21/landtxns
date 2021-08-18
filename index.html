@@ -81,9 +81,13 @@ $.getJSON("data/FSSTL263.geojson", function(data) {
 
 $.getJSON("data/FSSTL279.geojson", function(data) {
     // add GeoJSON layer to the map once the file is loaded
-    L.geoJSON(data).bindPopup("208-1-15: 恒基地產以逾12.35億元完成補地價，每方呎補價金額逾 " + "<b>$3,600</b>").addTo(kwutung_lands);
+    L.geoJSON(data).bindPopup("2018-1-15: 恒基地產以逾12.35億元完成補地價，每方呎補價金額逾 " + "<b>$3,600</b>").addTo(kwutung_lands);
 });
 		
+$.getJSON("data/FSSTL278.geojson", function(data) {
+    // add GeoJSON layer to the map once the file is loaded
+    L.geoJSON(data).bindPopup("2021-7-28: 會德豐以$41.85億元、得面積82,258呎政府地，每呎樓面地價約 " + "<b>$8,499</b>").addTo(kwutung_lands);
+});
 		
 // Layer control
 var baseMaps = {
