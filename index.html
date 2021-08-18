@@ -39,7 +39,6 @@
 <body>
 	<div id="map"></div>
 	<script>
-
 // Tile layer
 var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'});
 var imagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'});
@@ -48,6 +47,8 @@ var imagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/
 // load GeoJSON from a local folder
 var url = "data/geodata.geojson"
 
+// Markers
+var kwutong_lands = L.layerGroup();
 
 function formatNumber(num) {
 	return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
@@ -55,7 +56,7 @@ function formatNumber(num) {
 
 
 // Map
-var map = L.map('map', {center: [22.50939, 114.10432], zoom: 11, layers: [osm]});
+var map = L.map('map', {center: [22.50939, 114.10432], zoom: 11, layers: [osm,kwutung_lands]});
 
 
 // Target Property Icon (moveable)
@@ -71,7 +72,7 @@ popup.addTo(map);
 
 $.getJSON(url, function(data) {
     // add GeoJSON layer to the map once the file is loaded
-    L.geoJSON(data).addTo(map);
+    L.geoJSON(data).addTo(kwutong_lands);
 });
 
 // Layer control
@@ -80,9 +81,11 @@ var baseMaps = {
     "Imagery 圖層": imagery
 };
 var overlayMaps = {
-    "First Marker": singleMarker
+    "Subject Property": singleMarker,
+	"Land Transactions" : kwutong_lands
 };
 L.control.layers(baseMaps, overlayMaps, {position: "topleft", collapsed: true}).addTo(map);
+
 	</script>
 </body>
 </html>
