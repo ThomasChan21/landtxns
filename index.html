@@ -68,7 +68,7 @@ function formatNumber(num) {
 
 
 // Map
-var map = L.map('map', {center: [22.35165, 114.11917], zoom: 12, layers: [osm, exchange_land, modi_land, private_treaty_land, land_sharing]});
+var map = L.map('map', {center: [22.29227, 114.20847], zoom: 12, layers: [osm, exchange_land, modi_land, private_treaty_land, land_sharing]});
 
 
 // Target Property Icon (moveable)
@@ -77,7 +77,7 @@ var myIcon = L.icon({
 	iconSize: [25, 40],
 });
 
-var singleMarker = L.marker([22.35165, 114.11917], { icon: myIcon, draggable: true }).addTo(map);
+var singleMarker = L.marker([22.29227, 114.20847], { icon: myIcon, draggable: true }).addTo(map);
 var popup = singleMarker.bindPopup('目標物業').openPopup();
 popup.addTo(map);
 
@@ -115,7 +115,7 @@ $.getJSON(url_exchange, function(data) {
 					+ "<b>發展商: </b>" + value.properties.developer + "<br>"
 					+ "<b>簽辦/交易日期: </b>" + value.properties.txn_date + "<br>"
 					+ "<b>備註: </b>" + value.properties.remark + "<br>"
-					+ "<b>交易類別: </b>" + "<b style = 'color:red;'>" + "換 地" + "</b>")
+					+ "<b style = 'background-color:yellow;'>交易類別: <i style = 'color:red;'>換 地 </i></b>")
 					.addTo(targetlayer);	
 			};
 		};
@@ -140,7 +140,7 @@ $.getJSON(url_modi, function(data) {
 					+ "<b>發展商: </b>"  + value.properties.developer + "<br>"
 					+ "<b>簽辦/交易日期: </b>" + value.properties.txn_date + "<br>"
 					+ "<b>備註: </b>" + value.properties.remark + "<br>"
-					+ "<b>交易類別: </b>" + "<b style = 'color:red;'>" + "契 約 修 訂" + "</b>")
+					+ "<b style = 'background-color:yellow;'>交易類別: <i style = 'color:red;'>契 約 修 訂 </i></b>")
 					.addTo(targetlayer);	
 			};
 		};
@@ -167,7 +167,7 @@ $.getJSON(url_privatetreaty, function(data) {
 					+ "<b>發展商: </b>" + value.properties.developer + "<br>"
 					+ "<b>簽辦/交易日期: </b>" + value.properties.txn_date + "<br>"
 					+ "<b>備註: </b>" + value.properties.remark + "<br>"
-					+ "<b>交易類別: </b>" + "<b style = 'color:red;'>" + "市 場 成 交" + "</b>")
+					+ "<b style = 'background-color:yellow;'>交易類別: <i style = 'color:red;'>市 場 成 交 </i></b>")
 					.addTo(targetlayer);	
 			};
 		};
@@ -193,7 +193,7 @@ $.getJSON(url_landsharing, function(data) {
 					+ "<b>擬議政府、機構或社區設施: </b>" + value.properties.GIC + "<br>"
 					+ "<b>初步實施時間表: </b>" + value.properties.tentative_programme + "<br>"
 					+ "<b>備註: </b>" + value.properties.remark + "<br>"
-					+ "<b>交易類別: </b>" + "<b style = 'color:red;'>" + "土 地 共 享 先 導 計 劃" + "</b>")
+					+ "<b style = 'background-color:yellow;'>交易類別: <i style = 'color:red;'>土 地 共 享 先 導 計 劃 </i></b>")
 					.addTo(targetlayer);	
 			};
 		};
