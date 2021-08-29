@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Land Sales Transactions</title>
+	<title>Land Transactions</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta name="author" content="Thomas Chan">
     <link rel="stylesheet" href="css/leaflet.css">
@@ -39,15 +39,37 @@
 <body>
 	<div id="map"></div>
 	<script>
+
 // Tile layer
 var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'});
 var imagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'});
 
+
+// load GeoJSON from a local folder
+var url_exchange = "data/exchangetxnsdata.geojson";
+var url_modi = "data/moditxnsdata.geojson";
+var url_privatetreaty = "data/privatetreatytxnsdata.geojson";
+var url_landsharing = "data/lspsdata.geojson";
+
+
 // Markers
-var kwutung_lands = L.layerGroup();	
+var exchange_land = L.layerGroup();
+var modi_land = L.layerGroup();
+var private_treaty_land = L.layerGroup();
+var land_sharing = L.layerGroup();
+
+const txn_type_layer_array = [exchange_land, modi_land, private_treaty_land, land_sharing];
+const txn_type_array = ["exchange", "modi", "private_treaty", "land_sharing"];
+
+
+function formatNumber(num) {
+	return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+}
+
 
 // Map
-var map = L.map('map', {center: [22.50939, 114.10432], zoom: 13, layers: [osm, kwutung_lands]});
+var map = L.map('map', {center: [22.35165, 114.11917], zoom: 12, layers: [osm, exchange_land, modi_land, private_treaty_land, land_sharing]});
+
 
 // Target Property Icon (moveable)
 var myIcon = L.icon({
@@ -55,45 +77,129 @@ var myIcon = L.icon({
 	iconSize: [25, 40],
 });
 
-var singleMarker = L.marker([22.50939, 114.10432], { icon: myIcon, draggable: false }).addTo(map);
+var singleMarker = L.marker([22.35165, 114.11917], { icon: myIcon, draggable: true }).addTo(map);
 var popup = singleMarker.bindPopup('目標物業').openPopup();
 popup.addTo(map);
-		
-// load GeoJSON from a local folder
-// const txnList = ["data/DD95Lot29etc.geojson", "data/FSSTL263.geojson", "data/FSSTL279.geojson"];
 
-// for (i=0; i < txnList.length; i++) {
-// 	$.getJSON(txnList[i], function(data) {
-		// add GeoJSON layer to the map once the file is loaded
-// 		L.geoJSON(data).addTo(kwutung_lands);
-// 	});
-// };
+function txn_style(feature) {
+	return {
+		color: "red",
+		fillColor: txn_color(feature.properties.txn_type),
+		fillOpacity: 0.4
+	};
+}
 
-$.getJSON("data/DD95Lot29etc.geojson", function(data) {
-    // add GeoJSON layer to the map once the file is loaded
-    L.geoJSON(data).bindPopup("2021-8-17: 嘉里$4.278億購入面積18.13萬呎農地，每呎地價約 " + "<b>$2,360</b>").addTo(kwutung_lands);
+function txn_color(type) {
+	if (type === "exchange") return "blue"; else
+	if (type === "modi") return "yellow"; else
+	if (type === "private_treaty") return "cyan"; else
+	if (type === "land_sharing") return "orange"; else
+	return "grey";
+}
+
+// land exchange transactions
+$.getJSON(url_exchange, function(data) {
+	$.each(data.features, function(key, value) {
+		var doctype = value.properties.txn_type;
+		for (i=0; i<txn_type_array.length; i++) {
+			if (doctype == txn_type_array[i]) {
+				var targetlayer = txn_type_layer_array[i];
+				L.geoJSON(value, {style: txn_style})
+					.bindPopup("<b>地點: </b>" + value.properties.location + "<br>" 
+					+ "<b>地段編號: </b>" + value.properties.lot_number + "<br>"
+					+ "<b>用途: </b>" + value.properties.user + "<br>"
+					+ "<b>地盤面積（平方呎）: </b>" + formatNumber(value.properties.site_area_in_SF) + "<br>"
+					+ "<b>可建樓面面積（平方呎）: </b>" + formatNumber(value.properties.gfa_in_SF) + "<br>"
+					+ "<b>地價（百萬元）: </b>$" + formatNumber(value.properties.consideration) + "<br>"
+					+ "<b>每呎樓面地價/補價: </b>$" + formatNumber(value.properties.AV) + "<br>"
+					+ "<b>發展商: </b>" + value.properties.developer + "<br>"
+					+ "<b>簽辦/交易日期: </b>" + value.properties.txn_date + "<br>"
+					+ "<b>備註: </b>" + value.properties.remark + "<br>"
+					+ "<b>交易類別: </b>" + "<b style = 'color:red;'>" + "換 地" + "</b>")
+					.addTo(targetlayer);	
+			};
+		};
+	});
 });
 
-$.getJSON("data/FSSTL263.geojson", function(data) {
-    // add GeoJSON layer to the map once the file is loaded
-    L.geoJSON(data).bindPopup("2018-1-15: 恒基地產以逾12.35億元完成補地價，每方呎補價金額逾 " + "<b>$3,600</b>").addTo(kwutung_lands);
-});		
+// lease modification transactions
+$.getJSON(url_modi, function(data) {
+	$.each(data.features, function(key, value) {
+		var doctype = value.properties.txn_type;
+		for (i=0; i<txn_type_array.length; i++) {
+			if (doctype == txn_type_array[i]) {
+				var targetlayer = txn_type_layer_array[i];
+				L.geoJSON(value, {style: txn_style})
+					.bindPopup("<b>地點: </b>" + value.properties.location + "<br>" 
+					+ "<b>地段編號: </b>" + value.properties.lot_number + "<br>"
+					+ "<b>修改後土地用途: </b>" + value.properties.after_user + "<br>"
+					+ "<b>地盤面積（平方呎）: </b>" + formatNumber(value.properties.site_area_in_SF) + "<br>"
+					+ "<b>修訂後可建樓面面積（平方呎）: </b>" + formatNumber(value.properties.after_gfa_in_SF) + "<br>"
+					+ "<b>地價（百萬元）: </b>$" + formatNumber(value.properties.consideration) + "<br>"
+					+ "<b>每呎樓面地價/補價: </b>$" + formatNumber(value.properties.AV) + "<br>"
+					+ "<b>發展商: </b>"  + value.properties.developer + "<br>"
+					+ "<b>簽辦/交易日期: </b>" + value.properties.txn_date + "<br>"
+					+ "<b>備註: </b>" + value.properties.remark + "<br>"
+					+ "<b>交易類別: </b>" + "<b style = 'color:red;'>" + "契 約 修 訂" + "</b>")
+					.addTo(targetlayer);	
+			};
+		};
+	});
+});
 
-$.getJSON("data/FSSTL279.geojson", function(data) {
-    // add GeoJSON layer to the map once the file is loaded
-    L.geoJSON(data).bindPopup("2021-4-27: 新鴻基地產以$86.14億投得面積199,855呎政府地，每呎樓面地價約 " + "<b>$7,178</b>").addTo(kwutung_lands);
+
+
+// private treaty transactions
+$.getJSON(url_privatetreaty, function(data) {
+	$.each(data.features, function(key, value) {
+		var doctype = value.properties.txn_type;
+		for (i=0; i<txn_type_array.length; i++) {
+			if (doctype == txn_type_array[i]) {
+				var targetlayer = txn_type_layer_array[i];
+				L.geoJSON(value, {style: txn_style})
+					.bindPopup("<b>地點: </b>" + value.properties.location + "<br>" 
+					+ "<b>地段編號: </b>" + value.properties.lot_number + "<br>"
+					+ "<b>用途: </b>" + value.properties.user + "<br>"
+					+ "<b>地盤面積（平方呎）: </b>" + formatNumber(value.properties.site_area_in_SF) + "<br>"
+					+ "<b>可建樓面面積（平方呎）: </b>" + formatNumber(value.properties.gfa_in_SF) + "<br>"
+					+ "<b>地價（百萬元）: </b>$" + formatNumber(value.properties.consideration) + "<br>"
+					+ "<b>每呎樓面地價/補價: </b>$" + formatNumber(value.properties.AV) + "<br>"
+					+ "<b>發展商: </b>" + value.properties.developer + "<br>"
+					+ "<b>簽辦/交易日期: </b>" + value.properties.txn_date + "<br>"
+					+ "<b>備註: </b>" + value.properties.remark + "<br>"
+					+ "<b>交易類別: </b>" + "<b style = 'color:red;'>" + "市 場 成 交" + "</b>")
+					.addTo(targetlayer);	
+			};
+		};
+	});
 });
-		
-$.getJSON("data/FSSTL278.geojson", function(data) {
-    // add GeoJSON layer to the map once the file is loaded
-    L.geoJSON(data).bindPopup("2021-7-28: 會德豐以$41.85億元、得面積82,258呎政府地，每呎樓面地價約 " + "<b>$8,499</b>").addTo(kwutung_lands);
+
+
+// land sharing pilot scheme
+$.getJSON(url_landsharing, function(data) {
+	$.each(data.features, function(key, value) {
+		var doctype = value.properties.txn_type;
+		for (i=0; i<txn_type_array.length; i++) {
+			if (doctype == txn_type_array[i]) {
+				var targetlayer = txn_type_layer_array[i];
+				L.geoJSON(value, {style: txn_style})
+					.bindPopup("<b>地點: </b>" + value.properties.location + "<br>" 
+					+ "<b>申請人: </b>" + value.properties.applicant + "<br>"
+					+ "<b>法定圖則: </b>" + value.properties.ozp + "<br>"
+					+ "<b>土地用途地帶: </b>" + value.properties.zoning + "<br>"
+					+ "<b>發展用地面積（平方呎）: </b>" + formatNumber(value.properties.development_site_area) + "<br>"
+					+ "<b>地積比率（平均）: </b>" + formatNumber(value.properties.plot_ratio) + "<br>"
+					+ "<b>幢數: </b>" + value.properties.no_of_block + "<br>"
+					+ "<b>擬議政府、機構或社區設施: </b>" + value.properties.GIC + "<br>"
+					+ "<b>初步實施時間表: </b>" + value.properties.tentative_programme + "<br>"
+					+ "<b>備註: </b>" + value.properties.remark + "<br>"
+					+ "<b>交易類別: </b>" + "<b style = 'color:red;'>" + "土 地 共 享 先 導 計 劃" + "</b>")
+					.addTo(targetlayer);	
+			};
+		};
+	});
 });
-		
-$.getJSON("data/DD91Lot4076.geojson", function(data) {
-    // add GeoJSON layer to the map once the file is loaded
-    L.geoJSON(data).bindPopup("2021-6-30: 永泰地產以26.168億元，投得面積4.74萬方呎政府地，以最高可建樓面28.42萬方呎計，每方呎樓面地價約 " + "<b>$9,208</b>").addTo(kwutung_lands);
-});		
-		
+
 
 // Layer control
 var baseMaps = {
@@ -101,8 +207,11 @@ var baseMaps = {
     "Imagery 圖層": imagery
 };
 var overlayMaps = {
-    "Subject Property": singleMarker,
-    "Land Transactions" : kwutung_lands
+    "目標物業": singleMarker,
+	"換地類別" : exchange_land,
+	"契約修訂類別" : modi_land,
+	"市場成交類別" : private_treaty_land,
+	"土地共享先導計劃" : land_sharing
 };
 L.control.layers(baseMaps, overlayMaps, {position: "topleft", collapsed: true}).addTo(map);
 
