@@ -50,6 +50,7 @@ var url_exchange = "data/exchangetxnsdata.geojson";
 var url_modi = "data/moditxnsdata.geojson";
 var url_privatetreaty = "data/privatetreatytxnsdata.geojson";
 var url_landsharing = "data/lspsdata.geojson";
+var url_ntozp = "data/ntozp.geojson";
 
 
 // Markers
@@ -57,9 +58,12 @@ var exchange_land = L.layerGroup();
 var modi_land = L.layerGroup();
 var private_treaty_land = L.layerGroup();
 var land_sharing = L.layerGroup();
+var ntozp = L.layerGroup();
 
 const txn_type_layer_array = [exchange_land, modi_land, private_treaty_land, land_sharing];
 const txn_type_array = ["exchange", "modi", "private_treaty", "land_sharing"];
+const ozp_number_array = ["S/FLN/2", "S/HSK/2", "S/KTN/2"]
+const ozp_name_array = ["粉嶺北", "洪水橋及厦村", "古洞北"]
 
 
 function formatNumber(num) {
@@ -81,6 +85,7 @@ var singleMarker = L.marker([22.29227, 114.20847], { icon: myIcon, draggable: tr
 var popup = singleMarker.bindPopup('目標物業').openPopup();
 popup.addTo(map);
 
+// transaction style
 function txn_style(feature) {
 	return {
 		color: "red",
@@ -96,6 +101,39 @@ function txn_color(type) {
 	if (type === "land_sharing") return "orange"; else
 	return "grey";
 }
+
+// OZP style
+function ozp_style(feature) {
+	return {
+		color: "black",
+		weight: 0.5,
+		fillColor: ozp_color(feature.properties.ZONE_LABEL),
+		fillOpacity: 0.4
+	};
+}
+
+function ozp_color(type) {
+	if (type.slice(0,4) === "R(A)") return "Maroon"; else
+	if (type.slice(0,4) === "R(B)") return "SaddleBrown"; else
+	if (type.slice(0,4) === "R(C)") return "GoldenRod"; else
+	if (type.slice(0,4) === "G/IC") return "PowderBlue"; else
+	if (type.slice(0,3) === "CDA") return "Red"; else
+	if (type.slice(0,3) === "AGR") return "Chartreuse"; else
+	if (type.slice(0,2) === "GB") return "GreenYellow"; else
+	if (type.slice(0,2) === "CA") return "LimeGreen"; else
+	if (type.slice(0,2) === "OU") return "Peru"; else	
+	if (type.slice(0,1) === "O") return "Lime"; else
+	if (type.slice(0,1) === "I") return "Magenta"; else
+	if (type.slice(0,1) === "V") return "Olive"; else
+	if (type.slice(0,1) === "C") return "IndianRed"; else
+	if (type.slice(0,4) === "RICH") return "Aqua"; else
+	if (type.slice(0,4) === "DRCH") return "Bisque"; else
+	return "grey";
+}
+
+
+
+
 
 // land exchange transactions
 $.getJSON(url_exchange, function(data) {
@@ -200,6 +238,25 @@ $.getJSON(url_landsharing, function(data) {
 	});
 });
 
+// OZP in NT
+$.getJSON(url_ntozp, function(data) {
+	$.each(data.features, function(key, value) {
+		var ozp_number = value.properties.PLAN_NO;
+		for (i=0; i<ozp_number_array.length; i++) {
+			if (ozp_number == ozp_number_array[i]) {
+				L.geoJSON(value, {style: ozp_style})
+					.bindPopup("<b>法定圖則名稱: </b>" + ozp_name_array[i] + "<br>" 
+					+ "<b>法定圖則編號: </b>" + value.properties.PLAN_NO + "<br>"
+					+ "<b>法定圖則: </b>" + value.properties.ZONE_LABEL + "<br>"
+					+ "<b>土地用途地帶: </b>" + value.properties.DESC_CHT + "<br>"
+					+ "<b>土地用途地帶(分類): </b>" + value.properties.SPUSE_CHT + "<br>")
+					.addTo(ntozp);	
+			};
+		};
+	});
+});
+
+
 
 // Layer control
 var baseMaps = {
@@ -211,9 +268,10 @@ var overlayMaps = {
 	"換地類別" : exchange_land,
 	"契約修訂類別" : modi_land,
 	"市場成交類別" : private_treaty_land,
-	"土地共享先導計劃" : land_sharing
+	"土地共享先導計劃" : land_sharing,
+	"OZP(NT)" : ntozp
 };
-L.control.layers(baseMaps, overlayMaps, {position: "topleft", collapsed: true}).addTo(map);
+L.control.layers(baseMaps, overlayMaps, {position: "topleft", collapsed: false}).addTo(map);
 
 	</script>
 </body>
