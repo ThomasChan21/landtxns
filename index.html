@@ -113,7 +113,7 @@ function ozp_style(feature) {
 }
 
 function ozp_color(type) {
-	if (type.slice(0,4) === "R(A)") return "Maroon"; else
+	if (type.slice(0,4) === "R(A)") return "DarkRed"; else
 	if (type.slice(0,4) === "R(B)") return "SaddleBrown"; else
 	if (type.slice(0,4) === "R(C)") return "GoldenRod"; else
 	if (type.slice(0,4) === "G/IC") return "PowderBlue"; else
@@ -269,7 +269,7 @@ var overlayMaps = {
 	"契約修訂類別" : modi_land,
 	"市場成交類別" : private_treaty_land,
 	"土地共享先導計劃" : land_sharing,
-	"OZP(NT)" : ntozp
+	"新發展區OZP" : ntozp
 };
 L.control.layers(baseMaps, overlayMaps, {position: "topleft", collapsed: false}).addTo(map);
 
