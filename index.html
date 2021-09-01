@@ -74,6 +74,7 @@ function formatNumber(num) {
 // Map
 var map = L.map('map', {center: [22.29227, 114.20847], zoom: 12, layers: [osm, exchange_land, modi_land, private_treaty_land, land_sharing]});
 
+map.options.minZoom = 11;
 
 // Target Property Icon (moveable)
 var myIcon = L.icon({
