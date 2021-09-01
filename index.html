@@ -102,6 +102,7 @@ function txn_color(type) {
 	return "grey";
 }
 
+
 // OZP style
 function ozp_style(feature) {
 	return {
@@ -116,7 +117,7 @@ function ozp_color(type) {
 	if (type.slice(0,4) === "R(A)") return "DarkRed"; else
 	if (type.slice(0,4) === "R(B)") return "SaddleBrown"; else
 	if (type.slice(0,4) === "R(C)") return "GoldenRod"; else
-	if (type.slice(0,4) === "G/IC") return "PowderBlue"; else
+	if (type.slice(0,4) === "G/IC") return "LightSkyBlue"; else
 	if (type.slice(0,3) === "CDA") return "Red"; else
 	if (type.slice(0,3) === "AGR") return "Chartreuse"; else
 	if (type.slice(0,2) === "GB") return "GreenYellow"; else
@@ -124,15 +125,29 @@ function ozp_color(type) {
 	if (type.slice(0,2) === "OU") return "Peru"; else	
 	if (type.slice(0,1) === "O") return "Lime"; else
 	if (type.slice(0,1) === "I") return "Magenta"; else
-	if (type.slice(0,1) === "V") return "Olive"; else
+	if (type.slice(0,1) === "V") return "DarkGoldenrod"; else
 	if (type.slice(0,1) === "C") return "IndianRed"; else
 	if (type.slice(0,4) === "RICH") return "Aqua"; else
 	if (type.slice(0,4) === "DRCH") return "Bisque"; else
 	return "grey";
 }
 
+var highlightStyle = {
+    weight: 3,
+    color: "yellow",
+    fillOpacity: 0.5
+};
 
+function highlightFeature(e) {
+    var currentLayer = e.target;
+    currentLayer.setStyle(highlightStyle);
+    currentLayer.bringToFront();
+}
 
+function resetHighlight(e) {
+    var currentLayer = e.target;
+    geojson.resetStyle(currentLayer);
+}
 
 
 // land exchange transactions
@@ -149,7 +164,7 @@ $.getJSON(url_exchange, function(data) {
 					+ "<b>地盤面積（平方呎）: </b>" + formatNumber(value.properties.site_area_in_SF) + "<br>"
 					+ "<b>可建樓面面積（平方呎）: </b>" + formatNumber(value.properties.gfa_in_SF) + "<br>"
 					+ "<b>地價（百萬元）: </b>$" + formatNumber(value.properties.consideration) + "<br>"
-					+ "<b>每呎樓面地價/補價: </b>$" + formatNumber(value.properties.AV) + "<br>"
+					+ "<b style = 'background-color:greenyellow;'>每呎樓面補價: $" + formatNumber(value.properties.AV) + "</b>"+ "<br>"
 					+ "<b>發展商: </b>" + value.properties.developer + "<br>"
 					+ "<b>簽辦/交易日期: </b>" + value.properties.txn_date + "<br>"
 					+ "<b>備註: </b>" + value.properties.remark + "<br>"
@@ -174,7 +189,7 @@ $.getJSON(url_modi, function(data) {
 					+ "<b>地盤面積（平方呎）: </b>" + formatNumber(value.properties.site_area_in_SF) + "<br>"
 					+ "<b>修訂後可建樓面面積（平方呎）: </b>" + formatNumber(value.properties.after_gfa_in_SF) + "<br>"
 					+ "<b>地價（百萬元）: </b>$" + formatNumber(value.properties.consideration) + "<br>"
-					+ "<b>每呎樓面地價/補價: </b>$" + formatNumber(value.properties.AV) + "<br>"
+					+ "<b style = 'background-color:pink;'>每呎樓面補價: $" + formatNumber(value.properties.AV) + "</b>" + "<br>"
 					+ "<b>發展商: </b>"  + value.properties.developer + "<br>"
 					+ "<b>簽辦/交易日期: </b>" + value.properties.txn_date + "<br>"
 					+ "<b>備註: </b>" + value.properties.remark + "<br>"
@@ -201,7 +216,7 @@ $.getJSON(url_privatetreaty, function(data) {
 					+ "<b>地盤面積（平方呎）: </b>" + formatNumber(value.properties.site_area_in_SF) + "<br>"
 					+ "<b>可建樓面面積（平方呎）: </b>" + formatNumber(value.properties.gfa_in_SF) + "<br>"
 					+ "<b>地價（百萬元）: </b>$" + formatNumber(value.properties.consideration) + "<br>"
-					+ "<b>每呎樓面地價/補價: </b>$" + formatNumber(value.properties.AV) + "<br>"
+					+ "<b style = 'background-color:gold;'>每呎地價: $" + formatNumber(value.properties.AV) + "</b>" + "<br>"
 					+ "<b>發展商: </b>" + value.properties.developer + "<br>"
 					+ "<b>簽辦/交易日期: </b>" + value.properties.txn_date + "<br>"
 					+ "<b>備註: </b>" + value.properties.remark + "<br>"
@@ -244,7 +259,14 @@ $.getJSON(url_ntozp, function(data) {
 		var ozp_number = value.properties.PLAN_NO;
 		for (i=0; i<ozp_number_array.length; i++) {
 			if (ozp_number == ozp_number_array[i]) {
-				L.geoJSON(value, {style: ozp_style})
+				geojson = L.geoJSON(value, {
+					style: ozp_style,
+					onEachFeature: function(feature, layer) {
+						layer
+							.on("mouseover", highlightFeature)
+							.on("mouseout", resetHighlight)
+					}
+				})
 					.bindPopup("<b>法定圖則名稱: </b>" + ozp_name_array[i] + "<br>" 
 					+ "<b>法定圖則編號: </b>" + value.properties.PLAN_NO + "<br>"
 					+ "<b>法定圖則: </b>" + value.properties.ZONE_LABEL + "<br>"
@@ -255,7 +277,6 @@ $.getJSON(url_ntozp, function(data) {
 		};
 	});
 });
-
 
 
 // Layer control
