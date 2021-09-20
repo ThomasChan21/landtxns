@@ -51,7 +51,7 @@ var url_modi = "data/moditxnsdata.geojson";
 var url_privatetreaty = "data/privatetreatytxnsdata.geojson";
 var url_landsharing = "data/lspsdata.geojson";
 var url_ntozp = "data/ntozp.geojson";
-
+var url_land4sale = "data/land4sale.geojson";
 
 // Markers
 var exchange_land = L.layerGroup();
@@ -59,6 +59,7 @@ var modi_land = L.layerGroup();
 var private_treaty_land = L.layerGroup();
 var land_sharing = L.layerGroup();
 var ntozp = L.layerGroup();
+var land4sale = L.layerGroup();
 
 const txn_type_layer_array = [exchange_land, modi_land, private_treaty_land, land_sharing];
 const txn_type_array = ["exchange", "modi", "private_treaty", "land_sharing"];
@@ -72,7 +73,7 @@ function formatNumber(num) {
 
 
 // Map
-var map = L.map('map', {center: [22.29227, 114.20847], zoom: 12, layers: [osm, exchange_land, modi_land, private_treaty_land, land_sharing]});
+var map = L.map('map', {center: [22.36495, 114.14715], zoom: 11, layers: [osm, exchange_land, modi_land, private_treaty_land, land_sharing, land4sale]});
 
 map.options.minZoom = 11;
 
@@ -82,7 +83,7 @@ var myIcon = L.icon({
 	iconSize: [25, 40],
 });
 
-var singleMarker = L.marker([22.29227, 114.20847], { icon: myIcon, draggable: true }).addTo(map);
+var singleMarker = L.marker([22.52049, 114.09713], { icon: myIcon, draggable: true }).addTo(map);
 var popup = singleMarker.bindPopup('目標物業').openPopup();
 popup.addTo(map);
 
@@ -100,6 +101,7 @@ function txn_color(type) {
 	if (type === "modi") return "yellow"; else
 	if (type === "private_treaty") return "cyan"; else
 	if (type === "land_sharing") return "orange"; else
+	if (type === "land4sale") return "pink"; else
 	return "grey";
 }
 
@@ -280,6 +282,15 @@ $.getJSON(url_ntozp, function(data) {
 });
 
 
+// Land for Sale (Various Lots in DD96 )
+$.getJSON(url_land4sale, function(data) {
+	$.each(data.features, function(key, value) {
+		L.geoJSON(value, {style: txn_style})
+			.bindPopup("<b>地點: </b>" + value.properties.lot_no + "<br>" )
+			.addTo(land4sale);	
+		};
+	});
+
 // Layer control
 var baseMaps = {
     "OSM 圖層": osm,
@@ -291,8 +302,10 @@ var overlayMaps = {
 	"契約修訂類別" : modi_land,
 	"市場成交類別" : private_treaty_land,
 	"土地共享先導計劃" : land_sharing,
-	"新發展區OZP" : ntozp
+	"新發展區OZP" : ntozp,
+	"出售土地" : land4sale
 };
+
 L.control.layers(baseMaps, overlayMaps, {position: "topleft", collapsed: false}).addTo(map);
 
 	</script>
