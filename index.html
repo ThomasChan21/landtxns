@@ -61,10 +61,11 @@ var land_sharing = L.layerGroup();
 var ntozp = L.layerGroup();
 var land4sale = L.layerGroup();
 
+// Layers Arrays
 const txn_type_layer_array = [exchange_land, modi_land, private_treaty_land, land_sharing];
 const txn_type_array = ["exchange", "modi", "private_treaty", "land_sharing"];
-const ozp_number_array = ["S/FLN/2", "S/HSK/2", "S/KTN/2"]
-const ozp_name_array = ["粉嶺北", "洪水橋及厦村", "古洞北"]
+const ozp_number_array = ["S/FLN/2", "S/HSK/2", "S/KTN/2", "S/NE-MTL/3"];
+const ozp_name_array = ["粉嶺北", "洪水橋及厦村", "古洞北", "馬草壟及蠔殼圍"];
 
 
 function formatNumber(num) {
@@ -101,7 +102,7 @@ function txn_color(type) {
 	if (type === "modi") return "yellow"; else
 	if (type === "private_treaty") return "cyan"; else
 	if (type === "land_sharing") return "orange"; else
-	if (type === "for_sale") return "deeppink"; else
+	if (type === "for_sale") return "pink"; else
 	return "grey";
 }
 
@@ -262,7 +263,7 @@ $.getJSON(url_ntozp, function(data) {
 		var ozp_number = value.properties.PLAN_NO;
 		for (i=0; i<ozp_number_array.length; i++) {
 			if (ozp_number == ozp_number_array[i]) {
-				geojson = L.geoJSON(value, {
+				geojson = L.geoJSON(value, {            // geojson is used for resetHighlight function
 					style: ozp_style,
 					onEachFeature: function(feature, layer) {
 						layer
@@ -277,6 +278,7 @@ $.getJSON(url_ntozp, function(data) {
 					+ "<b>土地用途地帶(分類): </b>" + value.properties.SPUSE_CHT + "<br>")
 					.addTo(ntozp);	
 			};
+			if (i==3) {console.log(value.properties.PLAN_NO)};    //check error
 		};
 	});
 });
