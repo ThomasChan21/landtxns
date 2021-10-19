@@ -52,6 +52,7 @@ var url_privatetreaty = "data/privatetreatytxnsdata.geojson";
 var url_landsharing = "data/lspsdata.geojson";
 var url_ntozp = "data/ntozp.geojson";
 var url_land4sale = "data/land4sale.geojson";
+var url_first_hand_res = "data/first_hand_res.geojson";
 
 // Markers
 var exchange_land = L.layerGroup();
@@ -60,6 +61,7 @@ var private_treaty_land = L.layerGroup();
 var land_sharing = L.layerGroup();
 var ntozp = L.layerGroup();
 var land4sale = L.layerGroup();
+var first_hand_res = L.layerGroup();
 
 // Layers Arrays
 const txn_type_layer_array = [exchange_land, modi_land, private_treaty_land, land_sharing];
@@ -293,6 +295,28 @@ $.getJSON(url_land4sale, function(data) {
 	});
 });
 
+
+// First Hand Residential Flats Txn
+$.getJSON(url_first_hand_res, function(data) {
+	$.each(data.features, function(key, value) {
+		var sold_percentage = 100*(value.properties.No_Of_Units_Sold/value.properties.Total_No_Of_Units)
+		L.geoJSON(value)
+			.bindPopup("<b>發展項目: </b>" + value.properties.New_Property_Name + "<br>" 
+			+ "<b>項目位置: </b>" + value.properties.Address + "<br>" 
+			+ "<b>項目單位數目: </b>" + formatNumber(value.properties.Total_No_Of_Units) + "<br>"
+			+ "<b>已售單位數目: </b>" + formatNumber(value.properties.No_Of_Units_Sold) + "<br>"
+			+ "<b>售出單位百分比: </b>" + "<progress id='file' max='100' value='"+ sold_percentage.toFixed(0)+"'> </progress>" + sold_percentage.toFixed(0) + "%" + "<br>"
+			+ "<b>平均呎價: $" + formatNumber(value.properties.Avg_Unit_Rate) + "</b>" + "<br>"
+			+ "<b>項目發展商: </b>" + value.properties.Developer + "<br>" 
+			+ "<b>首次出售日期: </b>" + value.properties.First_Sales_Date + "<br>"
+			+ "<b>更新日期: </b>" + value.properties.Date_Of_Information + "<br>")
+			.addTo(first_hand_res);	
+	});
+
+});
+
+
+
 // Layer control
 var baseMaps = {
     "OSM 圖層": osm,
@@ -300,12 +324,13 @@ var baseMaps = {
 };
 var overlayMaps = {
     "目標物業": singleMarker,
-	"換地類別" : exchange_land,
-	"契約修訂類別" : modi_land,
-	"市場成交類別" : private_treaty_land,
-	"土地共享先導計劃" : land_sharing,
+	"換地個案" : exchange_land,
+	"契約修訂個案" : modi_land,
+	"市場成交個案" : private_treaty_land,
+	"土地共享申請個案" : land_sharing,
 	"新發展區OZP" : ntozp,
-	"出售土地" : land4sale
+	"出售土地" : land4sale,
+	"一手新盤" : first_hand_res
 };
 
 L.control.layers(baseMaps, overlayMaps, {position: "topleft", collapsed: false}).addTo(map);
